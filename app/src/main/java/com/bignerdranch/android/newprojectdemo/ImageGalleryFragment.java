@@ -12,13 +12,9 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -52,7 +48,7 @@ public class ImageGalleryFragment extends Fragment{
         final GridView gridView = (GridView) view.findViewById(R.id.gridview);
         final ImageAdapter adapter=new ImageAdapter(getContext());
         gridView.setAdapter(adapter);
-        gridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        //gridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 
 /*        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -60,7 +56,8 @@ public class ImageGalleryFragment extends Fragment{
 
             }
         });*/
-        gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+
+        /*gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 mode.setTitle("Select Items");
                 mode.setSubtitle("One item selected");
@@ -94,7 +91,7 @@ public class ImageGalleryFragment extends Fragment{
                 imageView.setChecked(checked);
 
             }
-        });
+        });*/
 
 
 
@@ -206,7 +203,7 @@ public class ImageGalleryFragment extends Fragment{
                 super.onDraw(canvas);
                 if(checked) {
                     Bitmap check = BitmapFactory.decodeResource(
-                            getResources(), R.drawable.check_custom);
+                            getResources(), R.drawable.check_white);
                     int width = check.getWidth();
                     int height = check.getHeight();
                     int margin = 15;
