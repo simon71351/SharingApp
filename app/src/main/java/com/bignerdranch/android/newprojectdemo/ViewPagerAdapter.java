@@ -18,6 +18,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Log.e("Position", "Position: "+position);
         if(position == 0) return new ImageGalleryFragment();
+        else if(position == 1) return new AudioGalleryFragment();
+        else if(position == 2) return  new VideoGalleryFragment();
         else return new TabFragment(position);    // Which Fragment should be dislpayed by the viewpager for the given position
         // In my case we are showing up only one fragment in all the three tabs so we are
         // not worrying about the position and just returning the TabFragment
