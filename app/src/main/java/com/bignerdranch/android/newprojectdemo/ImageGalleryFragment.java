@@ -7,14 +7,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -83,27 +87,46 @@ public class ImageGalleryFragment extends Fragment{
                 modelList.add(new ImageModel());
             }
 
-            gridView = (GridView) view.findViewById(R.id.gridview);
+//            gridView = (GridView) view.findViewById(R.id.gridview);
+            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
-            adapter = new ImageAdapter(getContext());
+            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+            recyclerView.setAdapter(new PhotoAdapter());
+            //adapter = new ImageAdapter(getContext());
 
             //adapter = new ImageCursorAdapter(getActivity());
 
-            gridView.setAdapter(adapter);
+            //gridView.setAdapter(adapter);
 
             Log.e("Cycle", "View gets successfully created");
 
-            gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//            recyclerView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//                @Override
+//                public void onScrollStateChanged(AbsListView absListView, int i) {
+//                    int firstVisibleRow = gridView.getFirstVisiblePosition();
+//                    int lastVisibleRow = gridView.getLastVisiblePosition();
+//                    Log.e("Scroll", "FirstVisibleRow: "+firstVisibleRow+" "+"LastVisibleRow: "+lastVisibleRow);
+//                }
+//
+//                @Override
+//                public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+//
+//                }
+//            });
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrollStateChanged(AbsListView absListView, int i) {
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
                     int firstVisibleRow = gridView.getFirstVisiblePosition();
                     int lastVisibleRow = gridView.getLastVisiblePosition();
                     Log.e("Scroll", "FirstVisibleRow: "+firstVisibleRow+" "+"LastVisibleRow: "+lastVisibleRow);
                 }
 
                 @Override
-                public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
                 }
             });
 
@@ -115,7 +138,7 @@ public class ImageGalleryFragment extends Fragment{
             }
         });*/
 
-            gridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+            recyclerView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
             gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
 
@@ -403,6 +426,88 @@ public class ImageGalleryFragment extends Fragment{
             ((MarkableImageView)imageView).setChecked(modelList.get(pos).isChecked());
 
 
+        }
+    }
+
+    private class PhotoHolder extends RecyclerView.ViewHolder{
+        public ImageView imageView;
+        public PhotoHolder(View itemView) {
+            super(itemView);
+
+            imageView = (ImageView) itemView.findViewById(R.id.gallery_image_view);
+        }
+
+        public void bindDrawable(Drawable drawable){
+            imageView.setImageDrawable(drawable);
+        }
+    }
+
+    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder>{
+        @Override
+        public PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            MarkableImageView imageView;
+
+            imageView = new MarkableImageView(getContext());
+            imageView.setLayoutParams(new GridView.LayoutParams(200, 220));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(5,5,5,5);
+
+            return new PhotoHolder(imageView);
+        }
+
+        @Override
+        public void onBindViewHolder(PhotoHolder holder, int position) {
+            cursor.moveToPosition(position);
+            int imageID = cursor.getInt(columnIndex);
+
+            String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+
+            //In Uri "" + imageID is to convert int into String as it only take String Parameter and imageID is in Integer format.
+            //You can use String.valueOf(imageID) instead.
+            Uri uri = Uri.withAppendedPath(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + imageID);
+
+            //Setting Image to View Holder Image View.
+
+//            imageView.setImageURI(uri);
+//            imageView.setChecked(modelList.get(position).isChecked());
+
+            new LoadImage(holder.imageView, imagePath, position).execute();
+
+//            holder.bindDrawable();
+        }
+
+        @Override
+        public int getItemCount() {
+            return cursor.getCount();
+        }
+
+        private int focusedItem = 0;
+
+        @Override
+        public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
+            super.onAttachedToRecyclerView(recyclerView);
+
+            // Handle key up and key down and attempt to move selection
+            recyclerView.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+
+                    // Return false if scrolled to the bounds and allow focus to move off the list
+                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                            return tryMoveSelection(lm, 1);
+                        } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                            return tryMoveSelection(lm, -1);
+                        }
+                    }
+
+                    return false;
+                }
+            });
+
+            recyclerView.setON
         }
     }
 }
