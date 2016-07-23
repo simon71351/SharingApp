@@ -93,7 +93,19 @@ public class ImageGalleryFragment extends Fragment{
 
             Log.e("Cycle", "View gets successfully created");
 
+            gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView absListView, int i) {
+                    int firstVisibleRow = gridView.getFirstVisiblePosition();
+                    int lastVisibleRow = gridView.getLastVisiblePosition();
+                    Log.e("Scroll", "FirstVisibleRow: "+firstVisibleRow+" "+"LastVisibleRow: "+lastVisibleRow);
+                }
 
+                @Override
+                public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+                }
+            });
 
 
 /*        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -311,7 +323,7 @@ public class ImageGalleryFragment extends Fragment{
 
 //            imageView.setImageURI(uri);
 //            imageView.setChecked(modelList.get(position).isChecked());
-            
+
             new LoadImage(imageView, imagePath, position).execute();
 
             //this is some comment

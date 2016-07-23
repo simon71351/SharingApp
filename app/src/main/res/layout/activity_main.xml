@@ -22,4 +22,19 @@
         android:layout_below="@+id/tabs"
         />
 
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send"
+            android:background="@color/PrimaryColor"
+            />
+    </LinearLayout>
+
 </RelativeLayout>
