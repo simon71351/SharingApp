@@ -26,6 +26,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -44,6 +46,7 @@ public class ImageGalleryFragment extends Fragment{
 
     class ImageModel{
         private boolean checked;
+        private String imagePath;
 
         public boolean isChecked() {
             return checked;
@@ -52,6 +55,30 @@ public class ImageGalleryFragment extends Fragment{
         public void setChecked(boolean checked) {
             this.checked = checked;
         }
+
+        public void setImagePath(String path){
+            imagePath = path;
+        }
+
+        public String getImagePath(){
+            return imagePath;
+        }
+    }
+
+    public GridView getGridView(){
+        return gridView;
+    }
+
+    public BaseAdapter getAdapter(){
+        return adapter;
+    }
+
+    public ArrayList<ImageModel> getModelList(){
+        return modelList;
+    }
+
+    public Object[] getSelectedPos(){
+        return selectedPos.toArray();
     }
 
     @Override
@@ -59,6 +86,15 @@ public class ImageGalleryFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
         modelList = new ArrayList<>();
+    }
+
+    public String[] getSelectedImagePaths(){
+
+        String[] imagePaths = new String[selectedPos.size()];
+        for(int i = 0; i < selectedPos.size(); i++){
+            imagePaths[i] = modelList.get(selectedPos.get(i)).getImagePath();
+        }
+        return imagePaths;
     }
 
     @Nullable
@@ -74,6 +110,7 @@ public class ImageGalleryFragment extends Fragment{
             //Retriving Images from Database(SD CARD) by Cursor.
             final String[] list = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
             cursor = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, list, null, null, MediaStore.Images.Media._ID);
+
 
             columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
 
@@ -144,6 +181,8 @@ public class ImageGalleryFragment extends Fragment{
                             modelList.get(i).setChecked(true);
                             selectedPos.add(i);
                         }
+
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -313,7 +352,7 @@ public class ImageGalleryFragment extends Fragment{
             int imageID = cursor.getInt(columnIndex);
 
             String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
-
+            modelList.get(position).setImagePath(imagePath);
             //In Uri "" + imageID is to convert int into String as it only take String Parameter and imageID is in Integer format.
             //You can use String.valueOf(imageID) instead.
             Uri uri = Uri.withAppendedPath(
@@ -324,8 +363,13 @@ public class ImageGalleryFragment extends Fragment{
 //            imageView.setImageURI(uri);
 //            imageView.setChecked(modelList.get(position).isChecked());
 
-            new LoadImage(imageView, imagePath, position).execute();
-
+            //new LoadImage(imageView, imagePath, position).execute();
+            Log.e("ImagePath", imagePath);
+            Picasso.with(context)
+                    .load("file://"+imagePath)
+                    .resize(150, 150)
+                    .centerCrop()
+                    .into(imageView);
             //this is some comment
 
 

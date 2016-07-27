@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
+
     <GridView
         android:id="@+id/gridview"
         android:layout_width="fill_parent"
